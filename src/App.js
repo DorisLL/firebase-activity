@@ -6,17 +6,19 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import ControlSettings from './ControlSettings';
 import SvgDisplay from './SvgDisplay';
-
+import LogIn from './LogIn';
 import {
   HashRouter as Router,
   Switch,
   Route,
-  Link
+  Link, 
+  Redirect
 } from "react-router-dom";
 
 // Firebase 
-import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
-import firebase from 'firebase';
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/database';
 
 // Configure Firebase.
 const config = {
@@ -39,8 +41,7 @@ const uiConfig = {
     signInSuccessUrl: '',
     // We will display Google and Facebook as auth providers.
     signInOptions: [
-        firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-        firebase.auth.FacebookAuthProvider.PROVIDER_ID
+        firebase.auth.GoogleAuthProvider.PROVIDER_ID        
     ]
 };
 
@@ -76,11 +77,13 @@ export class App extends React.Component {
     // Listen to the Firebase Auth state and set the local state.
     componentDidMount() {
         this.unregisterAuthObserver = firebase.auth().onAuthStateChanged((user) => {                        
-            this.setState({ isSignedIn: !!user })            
-            const userRef = this.favoritesRef.child(user.uid);
-            userRef.on("value", (snapshot) => {
-                this.setState({ favorites: snapshot.val() })
-            })            
+            if(user) {
+                const userRef = this.favoritesRef.child(user.uid);
+                userRef.on("value", (snapshot) => {
+                    this.setState({ favorites: snapshot.val() })
+                })  
+            }        
+            this.setState({ isSignedIn: !!user })          
            
         })
     }
@@ -115,15 +118,6 @@ export class App extends React.Component {
         likesRef.transaction((d) => d + 1);
     }
     render() {
-        if (!this.state.isSignedIn) {
-            return (
-                <div>
-                    <h1>My App</h1>
-                    <p>Please sign-in:</p>
-                    <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
-                </div>
-            );
-        }
         return (
             <Router>
                 <div>
@@ -137,46 +131,49 @@ export class App extends React.Component {
                     </AppBar>
                 
                     <Switch>
-                    <Route path="/favorites">
-                        <SvgDisplay svgs={this.state.favorites}/>                        
-                    </Route>
-                    <Route path="/shared">
-                        <SvgDisplay svgs={this.state.public} onClick = {(d) => this.like(d)} showLikes={true}/> 
-                    </Route>
-                    <Route exact path="/">
-                        <div style={{ display: "inline-block", margin: "20px", marginTop:"50px"}}>                            
-                            <div style={{ display: "inline-block", width: "300px" }}>
-                                <Typography variant="h6" gutterBottom>Controls</Typography>
-                                <Controls onUpdate={this.handleChange.bind(this)} inputs={ControlSettings} />
+                        <Route path="/favorites">
+                            {!!firebase.auth().currentUser ? <SvgDisplay svgs={this.state.favorites}/> : <Redirect to="/signIn" /> }                    
+                        </Route>
+                        <Route path="/shared">
+                            {!!firebase.auth().currentUser ? <SvgDisplay svgs={this.state.public} onClick = {(d) => this.like(d)} showLikes={true}/> :  <Redirect to="/signIn" />}                    
+                        </Route>
+                        <Route path="/signIn">
+                            {!!firebase.auth().currentUser ? <Redirect to="/" /> : <LogIn uiConfig ={uiConfig} fbAuth = {firebase.auth}/> }                             
+                        </Route>                        
+                        <Route exact path="/">
+                            {!!!firebase.auth().currentUser ? <Redirect to="/signIn" /> :(<div style={{ display: "inline-block", margin: "20px", marginTop:"50px"}}>                            
+                                <div style={{ display: "inline-block", width: "300px" }}>
+                                    <Typography variant="h6" gutterBottom>Controls</Typography>
+                                    <Controls onUpdate={this.handleChange.bind(this)} inputs={ControlSettings} />
 
-                                <div style={{ display: "inline-block" }}>
-                                    <label htmlFor="color">Line Color: </label>
-                                    <input defaultValue={this.state.lineColor} type="color" onChange={(event) => this.handleChange(event.target.value, "lineColor")} />
-                                </div>
+                                    <div style={{ display: "inline-block" }}>
+                                        <label htmlFor="color">Line Color: </label>
+                                        <input defaultValue={this.state.lineColor} type="color" onChange={(event) => this.handleChange(event.target.value, "lineColor")} />
+                                    </div>
 
-                                <div style={{ display: "inline-block" }}>
-                                    <label htmlFor="color">Background Color: </label>
-                                    <input type="color" onChange={(event) => this.handleChange(event.target.value, "backgroundColor")} />
+                                    <div style={{ display: "inline-block" }}>
+                                        <label htmlFor="color">Background Color: </label>
+                                        <input type="color" onChange={(event) => this.handleChange(event.target.value, "backgroundColor")} />
+                                    </div>
+                                    <div>
+                                        <Button style={{width:"100px", marginBottom:"10px", display:"block"}} variant="contained" color="primary" onClick={() => this.save()}>Save</Button>                                    
+                                        <Button style={{width:"100px", marginBottom:"10px", display:"block"}} variant="contained" color="primary" onClick={() => this.share()}>Share</Button>
+                                    </div>
                                 </div>
-                                <div>
-                                    <Button style={{width:"100px", marginBottom:"10px", display:"block"}} variant="contained" color="primary" onClick={() => this.save()}>Save</Button>                                    
-                                    <Button style={{width:"100px", marginBottom:"10px", display:"block"}} variant="contained" color="primary" onClick={() => this.share()}>Share</Button>
-                                </div>
-                            </div>
-                            <div style={{ display: "inline-block", verticalAlign: "Top" }}>
-                                <svg height={height} width={width} >
-                                    <rect height={height} width={width} fill={this.state.backgroundColor} />
-                                    <NoiseField
-                                        num_lines={this.state.num_lines}
-                                        max_steps={this.state.max_steps}
-                                        stepLength={this.state.stepLength}
-                                        noiseScale={this.state.noiseScale}
-                                        lineColor={this.state.lineColor}
-                                    />
-                                </svg >
-                            </div>                            
-                        </div>
-                    </Route>
+                                <div style={{ display: "inline-block", verticalAlign: "Top" }}>
+                                    <svg height={height} width={width} >
+                                        <rect height={height} width={width} fill={this.state.backgroundColor} />
+                                        <NoiseField
+                                            num_lines={this.state.num_lines}
+                                            max_steps={this.state.max_steps}
+                                            stepLength={this.state.stepLength}
+                                            noiseScale={this.state.noiseScale}
+                                            lineColor={this.state.lineColor}
+                                        />
+                                    </svg >
+                                </div>                            
+                            </div>)}
+                        </Route>
                     </Switch>                
                 </div>
             </Router>
