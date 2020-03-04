@@ -112,10 +112,22 @@ export class App extends React.Component {
         });
     }
 
-    like(svgId) {
-        console.log(this.svgId)
-        const likesRef = this.publicRef.child(svgId + "/likes");
-        likesRef.transaction((d) => d + 1);
+    like(svgId) {        
+        const likesRef = this.publicRef.child(svgId + "/likes/" + firebase.auth().currentUser.uid);        
+        likesRef.once('value').then(function(snap) {
+            // var array = Object.values(snap.val());
+            if(snap.val() === null) {
+                likesRef.set({val:1})
+            } else {
+                likesRef.remove()
+            }
+            // console.log(snap.val());
+            // if(!array.includes(firebase.auth().currentUser.uid)) {
+            //     likesRef.push(firebase.auth().currentUser.uid)
+            // } else {
+
+            // }            
+        })
     }
     render() {
         return (
@@ -135,7 +147,9 @@ export class App extends React.Component {
                             {!!firebase.auth().currentUser ? <SvgDisplay svgs={this.state.favorites}/> : <Redirect to="/signIn" /> }                    
                         </Route>
                         <Route path="/shared">
-                            {!!firebase.auth().currentUser ? <SvgDisplay svgs={this.state.public} onClick = {(d) => this.like(d)} showLikes={true}/> :  <Redirect to="/signIn" />}                    
+                            {!!firebase.auth().currentUser ? 
+                            <SvgDisplay svgs={this.state.public} onClick = {(d) => this.like(d)} showLikes={true}/> :  
+                            <Redirect to="/signIn" />}                    
                         </Route>
                         <Route path="/signIn">
                             {!!firebase.auth().currentUser ? <Redirect to="/" /> : <LogIn uiConfig ={uiConfig} fbAuth = {firebase.auth}/> }                             
