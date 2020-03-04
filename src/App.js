@@ -115,18 +115,11 @@ export class App extends React.Component {
     like(svgId) {        
         const likesRef = this.publicRef.child(svgId + "/likes/" + firebase.auth().currentUser.uid);        
         likesRef.once('value').then(function(snap) {
-            // var array = Object.values(snap.val());
             if(snap.val() === null) {
                 likesRef.set({val:1})
             } else {
                 likesRef.remove()
-            }
-            // console.log(snap.val());
-            // if(!array.includes(firebase.auth().currentUser.uid)) {
-            //     likesRef.push(firebase.auth().currentUser.uid)
-            // } else {
-
-            // }            
+            }         
         })
     }
     render() {
