@@ -1,22 +1,22 @@
 {
   "files": {
     "main.css": "/firebase-activity/static/css/main.5ecd60fb.chunk.css",
-    "main.js": "/firebase-activity/static/js/main.e7f7c29a.chunk.js",
-    "main.js.map": "/firebase-activity/static/js/main.e7f7c29a.chunk.js.map",
+    "main.js": "/firebase-activity/static/js/main.864662bb.chunk.js",
+    "main.js.map": "/firebase-activity/static/js/main.864662bb.chunk.js.map",
     "runtime-main.js": "/firebase-activity/static/js/runtime-main.77e56590.js",
     "runtime-main.js.map": "/firebase-activity/static/js/runtime-main.77e56590.js.map",
-    "static/js/2.458c84f7.chunk.js": "/firebase-activity/static/js/2.458c84f7.chunk.js",
-    "static/js/2.458c84f7.chunk.js.map": "/firebase-activity/static/js/2.458c84f7.chunk.js.map",
+    "static/js/2.884055dd.chunk.js": "/firebase-activity/static/js/2.884055dd.chunk.js",
+    "static/js/2.884055dd.chunk.js.map": "/firebase-activity/static/js/2.884055dd.chunk.js.map",
     "index.html": "/firebase-activity/index.html",
-    "precache-manifest.f57a31db0ee59728ecd8e2df33346135.js": "/firebase-activity/precache-manifest.f57a31db0ee59728ecd8e2df33346135.js",
+    "precache-manifest.73aafde1eb684009b2cb74a7d0dca09b.js": "/firebase-activity/precache-manifest.73aafde1eb684009b2cb74a7d0dca09b.js",
     "service-worker.js": "/firebase-activity/service-worker.js",
     "static/css/main.5ecd60fb.chunk.css.map": "/firebase-activity/static/css/main.5ecd60fb.chunk.css.map",
-    "static/js/2.458c84f7.chunk.js.LICENSE.txt": "/firebase-activity/static/js/2.458c84f7.chunk.js.LICENSE.txt"
+    "static/js/2.884055dd.chunk.js.LICENSE.txt": "/firebase-activity/static/js/2.884055dd.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.77e56590.js",
-    "static/js/2.458c84f7.chunk.js",
+    "static/js/2.884055dd.chunk.js",
     "static/css/main.5ecd60fb.chunk.css",
-    "static/js/main.e7f7c29a.chunk.js"
+    "static/js/main.864662bb.chunk.js"
   ]
 }
