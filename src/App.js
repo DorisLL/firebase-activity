@@ -64,6 +64,7 @@ export class App extends React.Component {
         this.favoritesRef = firebase.database().ref('favorites');
         this.publicRef = firebase.database().ref('public');
         this.publicRef.on("value", (snapshot) => {
+            console.log("something changed on firebase, so I will reset state")
             this.setState({ public: snapshot.val() })
         })
         this.like = this.like.bind(this);
@@ -80,6 +81,7 @@ export class App extends React.Component {
             if(user) {
                 const userRef = this.favoritesRef.child(user.uid);
                 userRef.on("value", (snapshot) => {
+                    console.log("the value of favorites/userid changed, so i reset the state")
                     this.setState({ favorites: snapshot.val() })
                 })  
             }        
